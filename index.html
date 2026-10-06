@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>ทิวลิปสีฟ้า 💙</title>
+
+  <!-- ฟอนต์ภาษาไทยแนวน่ารัก -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600&family=Sriracha&display=swap" rel="stylesheet" />
+
+  <style>
+      body {
+        font-family: "PBSimple", sans-serif !important;
+      }
+
+    @font-face {
+      font-family: "PBSimple";
+      src: url("./fonts/PBSimple-Regular.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* =========================================
+       PHASE 1 : โครงหน้าเว็บ + พื้นหลังสีฟ้า
+       ========================================= */
+
+    /* สีหลักของเว็บ (แก้ตรงนี้ที่เดียว ทั้งเว็บเปลี่ยนตาม) */
+    :root {
+      --sky-top:    #dff1ff;  /* ฟ้าอ่อนด้านบน */
+      --sky-mid:    #b9e0ff;  /* ฟ้ากลาง */
+      --sky-bottom: #8cc8f5;  /* ฟ้าเข้มด้านล่าง */
+      --ink:        #2f5d8a;  /* สีตัวอักษร */
+      --ink-soft:   #5b84ad;  /* สีตัวอักษรอ่อน */
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: "Mali", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-bottom) 100%);
+      background-attachment: fixed;
+      overflow: hidden;            /* หน้าเดียว ไม่ต้องเลื่อน */
+      min-height: 100dvh;
+    }
+
+    /* แสงฟุ้งนุ่มๆ ให้พื้นหลังดูมีมิติ */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(255,255,255,.75) 0, rgba(255,255,255,0) 35%),
+        radial-gradient(circle at 85% 30%, rgba(255,255,255,.45) 0, rgba(255,255,255,0) 30%),
+        radial-gradient(circle at 50% 110%, rgba(255,255,255,.35) 0, rgba(255,255,255,0) 45%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* เลเยอร์สำหรับกลีบลอย (ใช้ใน Phase 6) */
+    #petals {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* กล่องหลัก จัดทุกอย่างไว้กลางจอ */
+    .stage {
+      position: relative;
+      z-index: 2;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
+      text-align: center;
+    }
+
+    /* พื้นที่ช่อดอกไม้ (ใส่ช่อทิวลิปใน Phase 2) */
+    .bouquet {
+      width: min(78vw, 340px);
+      aspect-ratio: 300 / 305;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* =========================================
+       PHASE 2 : ช่อทิวลิปสีฟ้า
+       ========================================= */
+    .bouquet svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      filter: drop-shadow(0 14px 18px rgba(40, 90, 150, .22));
+    }
+
+    /* =========================================
+       PHASE 3 : แอนิเมชันตอนเปิดเว็บ
+       ========================================= */
+
+    /* ให้ทุกชิ้นใน SVG หมุน/ขยายรอบตัวเอง */
+    #wrap-back, #wrap-front, #leaves, #bow, .tulip use {
+      transform-box: fill-box;
+    }
+
+    /* 1) กระดาษห่อ ใบ โบว์ เลื่อนขึ้นมา */
+    #wrap-back, #leaves, #wrap-front {
+      animation: rise .8s cubic-bezier(.2,.8,.3,1) both;
+    }
+    #leaves { animation-delay: .1s; }
+    #bow {
+      transform-origin: 50% 50%;
+      animation: bowPop .6s cubic-bezier(.3,1.6,.5,1) .7s both;
+    }
+
+    /* 2) ก้านยืดขึ้น */
+    .stem {
+      stroke-dasharray: 220;
+      stroke-dashoffset: 220;
+      animation: grow .7s ease-out .6s forwards;
+    }
+
+    /* 3) ทิวลิปเด้งบานทีละดอก แล้วส่ายเบาๆ */
+    .tulip use {
+      transform-origin: 50% 100%;
+      animation:
+        bloom .7s cubic-bezier(.3,1.5,.5,1) calc(1s + var(--i) * .13s) both,
+        wobble 3.2s ease-in-out calc(2.8s + var(--i) * .2s) infinite;
+    }
+
+    /* จุดดอกไม้สีขาว กะพริบเบาๆ */
+    #dots circle {
+      animation: twinkle 2.4s ease-in-out infinite;
+      opacity: 0;
+    }
+    #dots circle:nth-child(odd)  { animation-delay: 2.2s; }
+    #dots circle:nth-child(even) { animation-delay: 2.9s; }
+
+    /* 4) ทั้งช่อโยกเบาๆ หลังบานครบ */
+    .bouquet svg {
+      transform-origin: 50% 95%;
+      animation: sway 5s ease-in-out 2.8s infinite;
+    }
+
+    @keyframes rise {
+      from { transform: translateY(60px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    @keyframes bowPop {
+      from { transform: scale(0); }
+      to   { transform: scale(1); }
+    }
+    @keyframes grow {
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes bloom {
+      0%   { transform: scale(0, 0);      opacity: 0; }
+      60%  { transform: scale(1.08, .95); opacity: 1; }
+      100% { transform: scale(1, 1);      opacity: 1; }
+    }
+    @keyframes wobble {
+      0%, 100% { transform: rotate(0deg); }
+      50%      { transform: rotate(2.5deg); }
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: .4; }
+      50%      { opacity: 1; }
+    }
+    @keyframes sway {
+      0%, 100% { transform: rotate(0deg); }
+      25%      { transform: rotate(-1.5deg); }
+      75%      { transform: rotate(1.5deg); }
+    }
+
+    /* ผู้ใช้ที่ตั้งค่าลดการเคลื่อนไหว: แสดงทันที */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; }
+      .stem { stroke-dashoffset: 0; }
+      #dots circle { opacity: .8; }
+    }
+
+    /* =========================================
+       PHASE 4 : ข้อความใต้ช่อดอกไม้ + คำแนะนำ
+       ========================================= */
+    .message {
+      font-size: clamp(15px, 4.2vw, 18px);
+      font-weight: 500;
+      line-height: 1.6;
+      max-width: 320px;
+      white-space: pre-line;       /* ขึ้นบรรทัดใหม่ตามที่พิมพ์ได้เลย */
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity .9s ease, transform .9s cubic-bezier(.2,.8,.3,1);
+    }
+
+    .hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--ink-soft);
+      background: rgba(255, 255, 255, .55);
+      padding: 6px 14px;
+      border-radius: 999px;
+      box-shadow: 0 4px 12px rgba(47, 93, 138, .12);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .8s ease 1s, transform .8s cubic-bezier(.2,.8,.3,1) 1s;
+    }
+    .hint .finger {
+      display: inline-block;
+      animation: tapHint 1.4s ease-in-out infinite;
+    }
+
+    /* แสดงหลังทิวลิปบานครบ (Phase 3 ใส่คลาส bloomed ให้) */
+    body.bloomed .message,
+    body.bloomed .hint {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    body.bloomed .hint {
+      animation: hintGlow 2.2s ease-in-out 2s infinite;
+    }
+
+    /* ช่อดอกไม้เด้งเมื่อแตะ */
+    .bouquet { transition: transform .15s ease; }
+    .bouquet:active { transform: scale(.96); }
+    .bouquet.tapped { animation: tapBounce .5s cubic-bezier(.3,1.6,.5,1); }
+
+    @keyframes tapHint {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-4px); }
+    }
+    @keyframes hintGlow {
+      0%, 100% { box-shadow: 0 4px 12px rgba(47, 93, 138, .12); }
+      50%      { box-shadow: 0 4px 18px rgba(255, 255, 255, .95); }
+    }
+    @keyframes tapBounce {
+      0%   { transform: scale(.94); }
+      100% { transform: scale(1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .message, .hint { transition: none; }
+    }
+
+    /* =========================================
+       PHASE 5 : จดหมาย
+       ========================================= */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+      background: rgba(47, 93, 138, .25);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .35s ease, visibility 0s linear .35s;
+    }
+    .overlay.open {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity .35s ease;
+    }
+    @media (min-width: 600px) {
+      .overlay { align-items: center; }
+    }
+
+    /* กระดาษจดหมาย */
+    .card {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      max-height: 82dvh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 10px;
+      padding: 44px 26px 30px;
+      font-family: "PBSimple", sans-serif !important;
+      color: #2f5d8a;
+      /* สีกระดาษ + เส้นบรรทัดจางๆ */
+      background:
+        repeating-linear-gradient(180deg, transparent 0 31px, rgba(120,170,220,.28) 31px 32px),
+        linear-gradient(180deg, #fffefb, #f4f9ff);
+      background-attachment: local;
+      background-position: 0 6px, 0 0;   /* ขยับเส้นให้ตรงกับตัวหนังสือ */
+      box-shadow:
+        0 1px 0 rgba(255,255,255,.9) inset,
+        0 20px 50px rgba(30, 70, 120, .3);
+      transform: translateY(110%) rotate(-2deg);
+      transform-origin: 50% 0;
+      transition: transform .6s cubic-bezier(.3,1.25,.5,1);
+    }
+    .overlay.open .card {
+      transform: translateY(0) rotate(0);
+      animation: unfold .7s cubic-bezier(.3,1.2,.5,1) .15s both;
+    }
+
+    /* เส้นขอบกระดาษด้านซ้ายแบบสมุด */
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0; bottom: 0; left: 18px;
+      width: 1.5px;
+      background: rgba(240, 150, 170, .35);
+    }
+
+    /* แสตมป์ทิวลิปที่มุม */
+    .stamp {
+      position: absolute;
+      top: 12px;
+      right: 54px;
+      width: 46px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      background: #e6f3ff;
+      border: 2px dashed #8fc0ec;
+      border-radius: 4px;
+      transform: rotate(6deg);
+    }
+
+    .card-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: #eaf5ff;
+      color: var(--ink);
+      font-size: 15px;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .letter-to,
+    .letter-body,
+    .letter-from {
+      font-size: 17px;
+      line-height: 32px;              /* ตรงกับเส้นบรรทัด */
+      white-space: pre-line;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .letter-to   { margin-bottom: 0; }
+    .letter-body { text-indent: 2em; }
+    .letter-from { text-align: right; margin-top: 32px; }
+
+    .overlay.open .letter-to   { opacity: 1; transform: none; transition-delay: .5s; }
+    .overlay.open .letter-body { opacity: 1; transform: none; transition-delay: .75s; }
+    .overlay.open .letter-from { opacity: 1; transform: none; transition-delay: 1s; }
+
+    @keyframes unfold {
+      0%   { clip-path: inset(0 0 85% 0 round 10px); }
+      100% { clip-path: inset(0 0 0 0 round 10px); }
+    }
+
+    body.card-open { overflow: hidden; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .overlay, .card, .letter-to, .letter-body, .letter-from { transition: none !important; }
+    }
+
+    /* =========================================
+       PHASE 6 : กลีบลอย + ปรับให้สวยบนมือถือ
+       ========================================= */
+    .petal {
+      position: absolute;
+      top: -40px;
+      width: var(--w);
+      height: calc(var(--w) * 1.35);
+      background: linear-gradient(160deg, var(--c1), var(--c2));
+      border-radius: 60% 60% 55% 55% / 75% 75% 35% 35%;   /* ทรงกลีบทิวลิป */
+      opacity: 0;
+      animation:
+        petalFall var(--dur) linear var(--delay) infinite,
+        petalSway calc(var(--dur) / 3) ease-in-out var(--delay) infinite alternate;
+    }
+    @keyframes petalFall {
+      0%   { transform: translateY(0) rotate(0deg);                 opacity: 0; }
+      10%  { opacity: .85; }
+      85%  { opacity: .75; }
+      100% { transform: translateY(110dvh) rotate(var(--spin));     opacity: 0; }
+    }
+    @keyframes petalSway {
+      from { margin-left: calc(var(--sway) * -1); }
+      to   { margin-left: var(--sway); }
+    }
+
+    /* ระบบสัมผัส: ไม่ซูมเวลาแตะเร็วๆ */
+    .bouquet, .card-close, .overlay { touch-action: manipulation; }
+
+    /* จอเตี้ย (มือถือเล็ก) : ย่อช่อดอกไม้ */
+    @media (max-height: 700px) {
+      .bouquet { width: min(70vw, 300px, 48dvh); }
+      .stage   { gap: 12px; }
+    }
+    @media (max-height: 560px) {
+      .bouquet { width: min(60vw, 260px, 44dvh); }
+    }
+    /* มือถือแนวนอน : ช่อดอกไม้อยู่ซ้าย ข้อความอยู่ขวา */
+    @media (orientation: landscape) and (max-height: 500px) {
+      .stage {
+        display: grid;
+        grid-template-columns: auto auto;
+        grid-template-rows: 1fr auto auto 1fr;
+        justify-content: center;
+        align-items: center;
+        gap: 10px 32px;
+      }
+      .bouquet { width: min(40vw, 62dvh); grid-row: 1 / 5; grid-column: 1; }
+      .message { grid-row: 2; grid-column: 2; }
+      .hint    { grid-row: 3; grid-column: 2; justify-self: center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #petals { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- กลีบลอยบนพื้นหลัง (Phase 6) -->
+  <div id="petals" aria-hidden="true"></div>
+
+  <main class="stage">
+
+    <!-- ช่อทิวลิป (Phase 2–3) -->
+    <div class="bouquet" id="bouquet" role="button" aria-label="ช่อทิวลิปสีฟ้า แตะเพื่ออ่านความหมาย">
+      <svg viewBox="0 95 300 305" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- แบบดอกทิวลิป 1 ดอก (ใช้ซ้ำ 7 ครั้ง เปลี่ยนสีได้) -->
+          <symbol id="tulip" overflow="visible">
+            <!-- กลีบหลัง -->
+            <path fill="var(--dark)" d="M0,0 C-18,-4 -22,-34 -13,-56 L-6,-46 L0,-58 L6,-46 L13,-56 C22,-34 18,-4 0,0Z"/>
+            <!-- กลีบข้างซ้าย / ขวา -->
+            <path fill="var(--mid)" d="M0,0 C-22,-3 -26,-32 -16,-54 C-6,-44 4,-22 0,0Z"/>
+            <path fill="var(--mid)" d="M0,0 C22,-3 26,-32 16,-54 C6,-44 -4,-22 0,0Z"/>
+            <!-- กลีบหน้า -->
+            <path fill="var(--light)" d="M0,0 C-13,-2 -15,-32 0,-54 C15,-32 13,-2 0,0Z"/>
+            <!-- ประกายบนกลีบ -->
+            <path fill="#fff" opacity=".45" d="M-4,-10 C-8,-22 -7,-36 -2,-44 C-4,-32 -3,-20 -1,-12Z"/>
+          </symbol>
+        </defs>
+
+        <!-- กระดาษห่อ ชั้นหลัง -->
+        <g id="wrap-back">
+          <path d="M58,232 Q150,210 242,232 L150,392Z" fill="#e6f4ff" stroke="#cbe4fa" stroke-width="2"/>
+        </g>
+
+        <!-- ใบทิวลิป -->
+        <g id="leaves">
+          <path d="M140,300 C112,282 72,268 40,238 C76,250 114,262 148,290Z" fill="#62b384"/>
+          <path d="M160,300 C188,282 228,268 260,236 C224,250 186,262 152,290Z" fill="#62b384"/>
+        </g>
+
+        <!-- ก้าน -->
+        <g id="stems" fill="none" stroke="#5aa878" stroke-width="4" stroke-linecap="round">
+          <path class="stem" d="M150,300 Q150,239 150,178"/>
+          <path class="stem" d="M150,300 Q132,247 114,194"/>
+          <path class="stem" d="M150,300 Q168,246 186,192"/>
+          <path class="stem" d="M150,300 Q116,259 82,218"/>
+          <path class="stem" d="M150,300 Q150,253 150,206"/>
+          <path class="stem" d="M150,300 Q184,258 218,216"/>
+          <path class="stem" d="M150,300 Q133,266 116,232"/>
+          <path class="stem" d="M150,300 Q167,265 184,230"/>
+          <path class="stem" d="M150,300 Q107,275 64,250"/>
+          <path class="stem" d="M150,300 Q150,270 150,240"/>
+          <path class="stem" d="M150,300 Q193,274 236,248"/>
+        </g>
+
+        <!-- ดอกไม้จุดเล็กสีขาว -->
+        <g id="dots" fill="#ffffff">
+          <circle cx="48" cy="214" r="4"/><circle cx="56" cy="204" r="3"/><circle cx="42" cy="224" r="3"/>
+          <circle cx="252" cy="212" r="4"/><circle cx="246" cy="202" r="3"/><circle cx="258" cy="222" r="3"/>
+          <circle cx="96" cy="160" r="3.5"/><circle cx="204" cy="158" r="3.5"/><circle cx="150" cy="112" r="3"/>
+        </g>
+
+        <!-- ทิวลิป 11 ดอก (ตำแหน่ง, เอียง, สี) -->
+        <g id="tulips">
+          <g class="tulip" transform="translate(150 178) rotate(0) scale(1.05)"><use href="#tulip" style="--dark:#3f86d1;--mid:#6eb4f0;--light:#a8d8ff"/></g>
+          <g class="tulip" transform="translate(114 194) rotate(-11) scale(1.0)"><use href="#tulip" style="--dark:#2f6fbf;--mid:#5596e0;--light:#8cbcf2"/></g>
+          <g class="tulip" transform="translate(186 192) rotate(11) scale(1.0)"><use href="#tulip" style="--dark:#4a6fd0;--mid:#7d9cf0;--light:#b5c8ff"/></g>
+          <g class="tulip" transform="translate(82 218) rotate(-20) scale(1.0)"><use href="#tulip" style="--dark:#2f78c4;--mid:#5aa5e8;--light:#92ccf7"/></g>
+          <g class="tulip" transform="translate(150 206) rotate(0) scale(1.05)"><use href="#tulip" style="--dark:#4a6fd0;--mid:#7d9cf0;--light:#b5c8ff"/></g>
+          <g class="tulip" transform="translate(218 216) rotate(20) scale(1.0)"><use href="#tulip" style="--dark:#2f6fbf;--mid:#5596e0;--light:#8cbcf2"/></g>
+          <g class="tulip" transform="translate(116 232) rotate(-10) scale(1.05)"><use href="#tulip" style="--dark:#5b9be0;--mid:#8cc3f5;--light:#c4e4ff"/></g>
+          <g class="tulip" transform="translate(184 230) rotate(10) scale(1.05)"><use href="#tulip" style="--dark:#3f86d1;--mid:#6eb4f0;--light:#a8d8ff"/></g>
+          <g class="tulip" transform="translate(64 250) rotate(-26) scale(0.98)"><use href="#tulip" style="--dark:#4a6fd0;--mid:#7d9cf0;--light:#b5c8ff"/></g>
+          <g class="tulip" transform="translate(150 240) rotate(0) scale(1.1)"><use href="#tulip" style="--dark:#2f78c4;--mid:#5aa5e8;--light:#92ccf7"/></g>
+          <g class="tulip" transform="translate(236 248) rotate(26) scale(0.98)"><use href="#tulip" style="--dark:#5b9be0;--mid:#8cc3f5;--light:#c4e4ff"/></g>
+        </g>
+
+        <!-- กระดาษห่อ ชั้นหน้า -->
+        <g id="wrap-front">
+          <path d="M44,246 Q98,234 150,268 L150,392Z" fill="#ffffff" stroke="#d3e8fb" stroke-width="2"/>
+          <path d="M256,246 Q202,234 150,268 L150,392Z" fill="#f4faff" stroke="#d3e8fb" stroke-width="2"/>
+          <path d="M88,262 Q150,250 212,262 L150,392Z" fill="#fbfdff" stroke="#d3e8fb" stroke-width="2"/>
+          <path d="M120,270 L150,388 M180,270 L150,388" stroke="#e1effc" stroke-width="2" fill="none"/>
+        </g>
+
+        <!-- โบว์ -->
+        <g id="bow">
+          <path d="M146,316 L126,354 L137,350 L141,362 L152,318Z" fill="#3b78c3"/>
+          <path d="M154,316 L174,354 L163,350 L159,362 L148,318Z" fill="#3b78c3"/>
+          <path d="M150,312 C122,290 102,300 107,315 C112,331 133,326 150,312Z" fill="#4a8ad6"/>
+          <path d="M150,312 C178,290 198,300 193,315 C188,331 167,326 150,312Z" fill="#4a8ad6"/>
+          <ellipse cx="150" cy="312" rx="8" ry="7" fill="#2f66ad"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- ✏️ ===== แก้ข้อความใต้ช่อดอกไม้ตรงนี้ ===== ✏️
+         พิมพ์แทนข้อความตัวอย่างได้เลย กด Enter เพื่อขึ้นบรรทัดใหม่ได้ -->
+    <p class="message" id="message">For Zandyyy 💙</p>
+    <!-- ✏️ ===== จบส่วนข้อความ ===== -->
+
+    <!-- คำแนะนำให้แตะ (แก้คำได้เหมือนกัน) -->
+    <p class="hint" id="hint"><span class="finger">👆</span> ລອງແຕະຊໍ່ດອກໄມ້ເບິ່ງດຸ</p>
+
+  </main>
+
+  <!-- =========================================
+       PHASE 5 : จดหมาย (แตะช่อดอกไม้แล้วเด้งขึ้นมา)
+       ========================================= -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <article class="card" role="dialog" aria-modal="true" aria-label="จดหมาย">
+      <button class="card-close" id="cardClose" aria-label="ปิด">✕</button>
+      <div class="stamp" aria-hidden="true">🌷</div>
+
+      <!-- ✏️ ===== เริ่มส่วนที่แก้ข้อความในจดหมาย ===== ✏️ -->
+
+      <!-- ✏️ คำขึ้นต้น -->
+      <p class="letter-to">ເປັນຫຍັງຈ້ອງເປັນດອກ"ທິວລິບສີຟ້າ"</p>
+
+      <!-- ✏️ เนื้อความจดหมาย (กด Enter เว้นบรรทัดได้ตามใจ) -->
+      <p class="letter-body">ເປັນດອກທິວລິບສີທີ່ຫາຍາກ ແລະ ເປັນດອກໄມ້ທີ່ເຂົາມັກ ອາດຈະເປັນເວລລາສັ້ນທີ່ເຮົາຫາກະໄດ້ຮູ້ຈັກກັນ ແຕ່ເຂົາຢາກຮູ້ຈັກກັບເພີ່ນ ໄດ້ຈີບເພີ່ມ ເຂົາບໍ່ຮູ້ດອກວ່າທີ່ຜ່ານມາເພີ່ນເຈີຄວາມຮັກແບບໃດມາ ແຕ່ຖ້າເຂົາໄດ້ມີໂອກາດເຂົາກະຢາກຈະຮັກສາໄວ້ໃຫ້ດີ ແລະ ຢາກເຮັດໃຫ້ເພີ່ນເປັນຄົນທີ່ຮູ້ສຶກໂຊກດີທີ່ສຸດ 💙</p>
+
+      <!-- ✏️ คำลงท้าย -->
+      <p class="letter-from">ໄວ້ມື້ໃດເຮົາເຈີກັນ ເຂົາຈະຊື້ອດອກແທ້ໃຫ້ນ້າາ...</p>
+
+      <!-- ✏️ ===== จบส่วนที่แก้ข้อความในจดหมาย ===== -->
+    </article>
+  </div>
+
+  <script>
+    // =========================================
+    // PHASE 3 : ลำดับการบานของทิวลิป
+    // =========================================
+    const tulips = document.querySelectorAll('.tulip use');
+    tulips.forEach((t, i) => t.style.setProperty('--i', i));
+
+    // เวลาที่ทิวลิปดอกสุดท้ายบานเสร็จ (มิลลิวินาที)
+    const BLOOM_DONE = 1000 + (tulips.length - 1) * 130 + 700;
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ส่งสัญญาณว่า "บานครบแล้ว" ให้ Phase 4 ใช้ต่อ
+    setTimeout(() => {
+      document.body.classList.add('bloomed');
+      document.dispatchEvent(new Event('bouquet:bloomed'));
+    }, reduceMotion ? 0 : BLOOM_DONE);
+
+    // =========================================
+    // PHASE 4 : แตะช่อดอกไม้
+    // =========================================
+    const bouquet = document.getElementById('bouquet');
+
+    bouquet.addEventListener('click', () => {
+      // เด้งตอบรับ
+      bouquet.classList.remove('tapped');
+      void bouquet.offsetWidth;          // รีสตาร์ทแอนิเมชัน
+      bouquet.classList.add('tapped');
+
+      // เปิดการ์ดบทความ (Phase 5)
+      document.dispatchEvent(new Event('bouquet:tap'));
+    });
+
+    // =========================================
+    // PHASE 5 : เปิด / ปิดจดหมาย
+    // =========================================
+    const overlay = document.getElementById('overlay');
+    const cardClose = document.getElementById('cardClose');
+
+    function openCard() {
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('card-open');
+      overlay.querySelector('.card').scrollTop = 0;
+    }
+    function closeCard() {
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('card-open');
+    }
+
+    document.addEventListener('bouquet:tap', () => setTimeout(openCard, 180));
+    cardClose.addEventListener('click', closeCard);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeCard(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeCard(); });
+
+    // =========================================
+    // PHASE 6 : กลีบทิวลิปลอย
+    // =========================================
+    const petalLayer = document.getElementById('petals');
+    const PETAL_COLORS = [
+      ['#a8d8ff', '#6eb4f0'],
+      ['#b5c8ff', '#7d9cf0'],
+      ['#c4e4ff', '#8cc3f5'],
+      ['#ffffff', '#b9e0ff'],
+    ];
+    const rand = (min, max) => Math.random() * (max - min) + min;
+
+    function makePetals() {
+      if (reduceMotion) return;
+      const count = window.innerWidth < 600 ? 12 : 20;     // มือถือใช้กลีบน้อยกว่า
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('span');
+        const [c1, c2] = PETAL_COLORS[i % PETAL_COLORS.length];
+        p.className = 'petal';
+        p.style.left = rand(0, 100) + 'vw';
+        p.style.setProperty('--w', rand(8, 16) + 'px');
+        p.style.setProperty('--c1', c1);
+        p.style.setProperty('--c2', c2);
+        p.style.setProperty('--dur', rand(9, 16) + 's');
+        p.style.setProperty('--delay', rand(0, 10) + 's');
+        p.style.setProperty('--spin', rand(-360, 360) + 'deg');
+        p.style.setProperty('--sway', rand(15, 45) + 'px');
+        petalLayer.appendChild(p);
+      }
+    }
+
+    // เริ่มร่วงหลังทิวลิปบานครบ
+    document.addEventListener('bouquet:bloomed', makePetals, { once: true });
+  </script>
+</body>
+</html>
